@@ -144,6 +144,26 @@ Here's the **completed DB Photography website** with the missing contact form, m
             justify-content: center;
             text-align: center;
             color: white;
+            background: url('DB_L1964.JPG') center/cover no-repeat;
+            background-attachment: fixed;
+            animation: slideshow 12s infinite;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
         }
 
         .hero-content h1 {
@@ -151,11 +171,7 @@ Here's the **completed DB Photography website** with the missing contact form, m
             font-size: clamp(2.5rem, 5vw, 4.5rem);
             margin-bottom: 1.5rem;
             animation: fadeInUp 1s ease;
-            background: url('DB copy Black.png') center/cover;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            color: white; /* fallback */
+            color: white;
         }
 
         .hero-content p {
@@ -163,8 +179,7 @@ Here's the **completed DB Photography website** with the missing contact form, m
             margin-bottom: 2.5rem;
             max-width: 600px;
             animation: fadeInUp 1s ease 0.2s both;
-            background: url('DB copy Wite.png') center/cover;
-            color: black;
+            color: white;
         }
 
         .cta-button {
@@ -451,6 +466,16 @@ Here's the **completed DB Photography website** with the missing contact form, m
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        @keyframes slideshow {
+            0% { background-image: url('DB_L1964.JPG'); }
+            16.66% { background-image: url('DB_L1978.JPG'); }
+            33.32% { background-image: url('DB_L2000.JPG'); }
+            49.98% { background-image: url('DB_L2009.JPG'); }
+            66.64% { background-image: url('DB_L2054.JPG'); }
+            83.30% { background-image: url('DB_L2077.JPG'); }
+            100% { background-image: url('DB_L1964.JPG'); }
         }
 
         /* Responsive */
