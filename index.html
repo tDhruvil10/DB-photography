@@ -534,6 +534,23 @@
                 grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
                 gap: 1.5rem;
             }
+
+            .slider-arrow {
+                display: none; /* Hide arrows on mobile */
+            }
+        }
+
+        @media (min-width: 769px) {
+            .slider-arrow {
+                width: 80px;
+                height: 80px;
+                font-size: 3rem;
+                background: rgba(255, 255, 255, 0.3);
+            }
+
+            .slider-arrow:hover {
+                background: rgba(255, 255, 255, 0.5);
+            }
         }
     </style>
 </head>
