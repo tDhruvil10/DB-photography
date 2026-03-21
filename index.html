@@ -1,5 +1,3 @@
-Here's the **completed DB Photography website** with the missing contact form, mobile menu functionality, smooth scrolling, and all enhancements:
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -146,7 +144,6 @@ Here's the **completed DB Photography website** with the missing contact form, m
             color: white;
             background: url('DB_L1964.JPG') center/cover no-repeat;
             background-attachment: fixed;
-            animation: slideshow 12s infinite;
             position: relative;
         }
 
@@ -161,9 +158,52 @@ Here's the **completed DB Photography website** with the missing contact form, m
             z-index: 1;
         }
 
-        .hero-content {
+        .hero-slider {
             position: relative;
             z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            padding: 0 2rem;
+        }
+
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slider-arrow:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .slider-arrow-left {
+            left: 2rem;
+        }
+
+        .slider-arrow-right {
+            right: 2rem;
         }
 
         .hero-content h1 {
@@ -468,16 +508,6 @@ Here's the **completed DB Photography website** with the missing contact form, m
             }
         }
 
-        @keyframes slideshow {
-            0% { background-image: url('DB_L1964.JPG'); }
-            16.66% { background-image: url('DB_L1978.JPG'); }
-            33.32% { background-image: url('DB_L2000.JPG'); }
-            49.98% { background-image: url('DB_L2009.JPG'); }
-            66.64% { background-image: url('DB_L2054.JPG'); }
-            83.30% { background-image: url('DB_L2077.JPG'); }
-            100% { background-image: url('DB_L1964.JPG'); }
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             .nav-links {
@@ -541,10 +571,14 @@ Here's the **completed DB Photography website** with the missing contact form, m
 
     <!-- Hero Section -->
     <section id="home" class="hero">
-        <div class="hero-content">
-            <h1>Capturing Timeless Moments</h1>
-            <p>Professional photography for weddings, portraits, events & commercial projects. Your story, beautifully told.</p>
-            <a href="#gallery" class="cta-button">View My Work</a>
+        <div class="hero-slider">
+            <button class="slider-arrow slider-arrow-left" id="prevBtn">&#10094;</button>
+            <div class="hero-content">
+                <h1>Capturing Timeless Moments</h1>
+                <p>Professional photography for weddings, portraits, events & commercial projects. Your story, beautifully told.</p>
+                <a href="#gallery" class="cta-button">View My Work</a>
+            </div>
+            <button class="slider-arrow slider-arrow-right" id="nextBtn">&#10095;</button>
         </div>
     </section>
 
@@ -681,6 +715,57 @@ Here's the **completed DB Photography website** with the missing contact form, m
                 }
             });
         });
+
+        // Hero Slider
+        const hero = document.querySelector('.hero');
+        const images = [
+            'DB_L1964.JPG',
+            'DB_L1978.JPG',
+            'DB_L2000.JPG',
+            'DB_L2009.JPG',
+            'DB_L2054.JPG',
+            'DB_L2077.JPG'
+        ];
+        let currentIndex = 0;
+        let autoSlideInterval;
+
+        function updateBackground() {
+            hero.style.backgroundImage = `url('${images[currentIndex]}')`;
+        }
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % images.length;
+            updateBackground();
+        }
+
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            updateBackground();
+        }
+
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(nextSlide, 5000); // 5 seconds
+        }
+
+        function stopAutoSlide() {
+            clearInterval(autoSlideInterval);
+        }
+
+        // Event listeners for arrows
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            nextSlide();
+            stopAutoSlide();
+            startAutoSlide(); // Restart auto slide
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            prevSlide();
+            stopAutoSlide();
+            startAutoSlide(); // Restart auto slide
+        });
+
+        // Start auto slide on load
+        startAutoSlide();
     </script>
 </body>
 </html>
