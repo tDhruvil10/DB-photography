@@ -139,9 +139,6 @@ Here's the **completed DB Photography website** with the missing contact form, m
         /* Hero Section */
         .hero {
             height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
-                        url('DB copy Black.png') center/cover,
-                        url('DB copy Wite.png') center/cover;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -154,6 +151,11 @@ Here's the **completed DB Photography website** with the missing contact form, m
             font-size: clamp(2.5rem, 5vw, 4.5rem);
             margin-bottom: 1.5rem;
             animation: fadeInUp 1s ease;
+            background: url('DB copy Black.png') center/cover;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: white; /* fallback */
         }
 
         .hero-content p {
@@ -161,6 +163,8 @@ Here's the **completed DB Photography website** with the missing contact form, m
             margin-bottom: 2.5rem;
             max-width: 600px;
             animation: fadeInUp 1s ease 0.2s both;
+            background: url('DB copy Wite.png') center/cover;
+            color: black;
         }
 
         .cta-button {
