@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - DB Photography</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+            color: white;
+            padding: 1.5rem 0;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 100px auto 2rem;
+            padding: 0 2rem;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #2c3e50;
+        }
+
+        .dashboard-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+            border-bottom: 3px solid #e74c3c;
+            padding-bottom: 0.5rem;
+        }
+
+        .upload-area {
+            border: 3px dashed #e74c3c;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fff9f7;
+        }
+
+        .upload-area:hover {
+            background: #ffe8e0;
+            border-color: #c0392b;
+        }
+
+        .upload-area.dragover {
+            background: #ffe8e0;
+            border-color: #c0392b;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #e74c3c;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            margin-bottom: 1rem;
+        }
+
+        .upload-text p {
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-text strong {
+            color: #e74c3c;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+        }
+
+        .upload-info {
+            background: #e8f4f8;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            color: #0c5460;
+            font-size: 0.9rem;
+        }
+
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .image-card {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-actions {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 1.5rem 1rem 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .image-card:hover .image-actions {
+            transform: translateY(0);
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin-top: 80px;
+                padding: 0 1rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .images-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">DB Photography - Admin</div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+
+        <!-- Upload Section -->
+        <div class="dashboard-section">
+            <h2>Upload Images</h2>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                <div class="upload-text">
+                    <p><strong>Click to upload</strong> or drag and drop</p>
+                    <p style="font-size: 0.9rem; color: #666;">PNG, JPG, GIF (Max 10MB)</p>
+                </div>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" multiple>
+            <div class="upload-info">
+                <i class="fas fa-info-circle"></i> Uploaded images are stored and can be deleted at any time.
+            </div>
+        </div>
+
+        <!-- Images Gallery Section -->
+        <div class="dashboard-section">
+            <h2>Manage Images</h2>
+            <div id="imagesContainer" class="images-grid">
+                <div class="empty-message">No images uploaded yet. Start by uploading images above.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if admin is logged in
+        if (!sessionStorage.getItem('adminLoggedIn')) {
+            window.location.href = 'admin.html';
+        }
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const imagesContainer = document.getElementById('imagesContainer');
+
+        // Upload area click
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        // Handle file upload
+        function handleFiles(files) {
+            Array.from(files).forEach((file) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        addImage(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Please upload only image files');
+                }
+            });
+        }
+
+        // Add image to storage and display
+        function addImage(imageData) {
+            let images = JSON.parse(localStorage.getItem('adminImages')) || [];
+            const imageId = Date.now().toString();
+            
+            images.push({
+                id: imageId,
+                data: imageData
+            });
+            
+            localStorage.setItem('adminImages', JSON.stringify(images));
+            displayImages();
+        }
+
+        // Display all images
+        function displayImages() {
+            const images = JSON.parse(localStorage.getItem('adminImages')) || [];
+            
+            if (images.length === 0) {
+                imagesContainer.innerHTML = '<div class="empty-message">No images uploaded yet. Start by uploading images above.</div>';
+                return;
+            }
+
+            imagesContainer.innerHTML = '';
+            images.forEach((image) => {
+                const imageCard = document.createElement('div');
+                imageCard.className = 'image-card';
+                imageCard.innerHTML = `
+                    <img src="${image.data}" alt="Uploaded image">
+                    <div class="image-actions">
+                        <button class="delete-btn" onclick="deleteImage('${image.id}')">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                    </div>
+                `;
+                imagesContainer.appendChild(imageCard);
+            });
+        }
+
+        // Delete image
+        function deleteImage(imageId) {
+            if (confirm('Are you sure you want to delete this image?')) {
+                let images = JSON.parse(localStorage.getItem('adminImages')) || [];
+                images = images.filter(img => img.id !== imageId);
+                localStorage.setItem('adminImages', JSON.stringify(images));
+                displayImages();
+            }
+        }
+
+        // Logout
+        function logout() {
+            sessionStorage.removeItem('adminLoggedIn');
+            sessionStorage.removeItem('adminUsername');
+            window.location.href = 'admin.html';
+        }
+
+        // Load images on page load
+        displayImages();
+    </script>
+</body>
+</html>
