@@ -229,6 +229,69 @@
             font-size: 1.1rem;
         }
 
+        .github-settings {
+            background: #f0f7ff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #0366d6;
+        }
+
+        .github-settings .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .github-settings label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .github-settings input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #0366d6;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .github-settings small {
+            display: block;
+            margin-top: 0.5rem;
+            color: #666;
+        }
+
+        .github-settings small a {
+            color: #0366d6;
+            text-decoration: none;
+        }
+
+        .github-settings small a:hover {
+            text-decoration: underline;
+        }
+
+        #settingsMessage {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 6px;
+            display: none;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        #settingsMessage.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        #settingsMessage.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin-top: 80px;
@@ -256,6 +319,24 @@
 
     <div class="container">
         <h1>Admin Dashboard</h1>
+
+        <!-- GitHub Settings Section -->
+        <div class="dashboard-section">
+            <h2>GitHub Settings</h2>
+            <div class="github-settings">
+                <div class="form-group">
+                    <label for="githubToken">GitHub Personal Access Token</label>
+                    <input type="password" id="githubToken" placeholder="Enter your GitHub token" value="">
+                    <small>Keep this token secure. <a href="https://github.com/settings/tokens" target="_blank">Create a new token</a></small>
+                </div>
+                <div class="form-group">
+                    <label for="githubRepo">GitHub Repository</label>
+                    <input type="text" id="githubRepo" placeholder="e.g., tDhruvil10/DB-photography" value="tDhruvil10/DB-photography">
+                </div>
+                <button class="btn" onclick="saveGitHubSettings()">Save Settings</button>
+                <div id="settingsMessage"></div>
+            </div>
+        </div>
 
         <!-- Upload Section -->
         <div class="dashboard-section">
@@ -292,6 +373,43 @@
         const fileInput = document.getElementById('fileInput');
         const imagesContainer = document.getElementById('imagesContainer');
 
+        // Load GitHub settings from localStorage
+        function loadGitHubSettings() {
+            const token = localStorage.getItem('githubToken');
+            const repo = localStorage.getItem('githubRepo');
+            
+            if (token) {
+                document.getElementById('githubToken').value = token;
+            }
+            if (repo) {
+                document.getElementById('githubRepo').value = repo;
+            }
+        }
+
+        // Save GitHub settings
+        function saveGitHubSettings() {
+            const token = document.getElementById('githubToken').value.trim();
+            const repo = document.getElementById('githubRepo').value.trim();
+            const message = document.getElementById('settingsMessage');
+
+            if (!token || !repo) {
+                message.textContent = 'Please fill in all fields';
+                message.className = 'error';
+                return;
+            }
+
+            localStorage.setItem('githubToken', token);
+            localStorage.setItem('githubRepo', repo);
+            
+            message.textContent = '✓ Settings saved successfully!';
+            message.className = 'success';
+            
+            setTimeout(() => {
+                message.className = '';
+                message.textContent = '';
+            }, 3000);
+        }
+
         // Upload area click
         uploadArea.addEventListener('click', () => fileInput.click());
 
@@ -318,31 +436,74 @@
 
         // Handle file upload
         function handleFiles(files) {
+            const token = localStorage.getItem('githubToken');
+            const repo = localStorage.getItem('githubRepo');
+
+            if (!token || !repo) {
+                alert('Please configure GitHub settings first!');
+                return;
+            }
+
             Array.from(files).forEach((file) => {
                 if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        addImage(e.target.result);
-                    };
-                    reader.readAsDataURL(file);
+                    uploadImageToGitHub(file, token, repo);
                 } else {
                     alert('Please upload only image files');
                 }
             });
         }
 
-        // Add image to storage and display
-        function addImage(imageData) {
+        // Upload image to GitHub
+        async function uploadImageToGitHub(file, token, repo) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const base64 = e.target.result.split(',')[1];
+                const fileName = `wedding-${Date.now()}-${file.name}`;
+                const [owner, repoName] = repo.split('/');
+
+                try {
+                    const response = await fetch(
+                        `https://api.github.com/repos/${owner}/${repoName}/contents/images/${fileName}`,
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `token ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                message: `Upload wedding photo: ${fileName}`,
+                                content: base64
+                            })
+                        }
+                    );
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        addImageToDatabase(fileName, data.content.download_url);
+                        displayImages();
+                    } else {
+                        const error = await response.json();
+                        alert(`Upload failed: ${error.message}`);
+                    }
+                } catch (error) {
+                    alert(`Error uploading to GitHub: ${error.message}`);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Add image to local database
+        function addImageToDatabase(fileName, githubUrl) {
             let images = JSON.parse(localStorage.getItem('adminImages')) || [];
-            const imageId = Date.now().toString();
             
             images.push({
-                id: imageId,
-                data: imageData
+                id: Date.now().toString(),
+                name: fileName,
+                url: githubUrl,
+                uploadedAt: new Date().toISOString()
             });
             
             localStorage.setItem('adminImages', JSON.stringify(images));
-            displayImages();
         }
 
         // Display all images
@@ -359,7 +520,7 @@
                 const imageCard = document.createElement('div');
                 imageCard.className = 'image-card';
                 imageCard.innerHTML = `
-                    <img src="${image.data}" alt="Uploaded image">
+                    <img src="${image.url}" alt="Uploaded image">
                     <div class="image-actions">
                         <button class="delete-btn" onclick="deleteImage('${image.id}')">
                             <i class="fas fa-trash-alt"></i> Delete
@@ -387,7 +548,8 @@
             window.location.href = 'admin.html';
         }
 
-        // Load images on page load
+        // Load on page load
+        loadGitHubSettings();
         displayImages();
     </script>
 </body>

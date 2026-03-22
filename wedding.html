@@ -111,11 +111,142 @@
 
     <div class="gallery-container">
         <h1>Wedding Moments</h1>
-        <iframe
-            src="https://drive.google.com/embeddedfolderview?id=1kUaXTyyXgR9hNK3gX8bAmHFAIfSopHsq#grid"
-            class="drive-embed"
-            allowfullscreen>
-        </iframe>
+        <div id="galleryMessage"></div>
+        <div id="googleDriveGallery">
+            <iframe
+                src="https://drive.google.com/embeddedfolderview?id=1kUaXTyyXgR9hNK3gX8bAmHFAIfSopHsq#grid"
+                class="drive-embed"
+                allowfullscreen>
+            </iframe>
+        </div>
+        <div id="adminGallery" class="admin-gallery" style="display: none;">
+            <h2>Admin Uploaded Photos</h2>
+            <div id="uploadedImages" class="images-grid"></div>
+        </div>
     </div>
+
+    <style>
+        .admin-gallery {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e74c3c;
+        }
+
+        .admin-gallery h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+        }
+
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .image-card {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .images-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+
+            .image-card img {
+                height: 200px;
+            }
+        }
+    </style>
+
+    <script>
+        // Display uploaded images from admin
+        function displayUploadedImages() {
+            const images = JSON.parse(localStorage.getItem('adminImages')) || [];
+            const uploadedImages = document.getElementById('uploadedImages');
+            const adminGallery = document.getElementById('adminGallery');
+
+            if (images.length === 0) {
+                adminGallery.style.display = 'none';
+                return;
+            }
+
+            adminGallery.style.display = 'block';
+            uploadedImages.innerHTML = '';
+
+            images.forEach((image) => {
+                const imageCard = document.createElement('div');
+                imageCard.className = 'image-card';
+                imageCard.innerHTML = `
+                    <img src="${image.url}" alt="Wedding Photo" onclick="openImageModal(this.src)">
+                `;
+                uploadedImages.appendChild(imageCard);
+            });
+        }
+
+        // Open image in modal
+        function openImageModal(src) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 999;
+                padding: 2rem;
+            `;
+            
+            modal.innerHTML = `
+                <div style="position: relative; max-width: 90vw; max-height: 90vh;">
+                    <img src="${src}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    <button onclick="this.parentElement.parentElement.remove()" style="
+                        position: absolute;
+                        top: -40px;
+                        right: 0;
+                        background: white;
+                        border: none;
+                        font-size: 2rem;
+                        cursor: pointer;
+                        color: white;
+                        padding: 0;
+                        width: 40px;
+                        height: 40px;
+                    ">×</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+        }
+
+        // Load images on page load
+        displayUploadedImages();
+    </script>
 </body>
 </html>
